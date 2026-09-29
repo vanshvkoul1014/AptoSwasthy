@@ -1,0 +1,68 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Xcode
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+Carthage/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# AWS SAM
+AptoSwasthy/infra/.aws-sam/
+AptoSwasthy/infra/samconfig.toml
+
+# Credentials & Secrets
+*.p12
+*.mobileprovision
+*.pem
+*.key
+.env
+.env.*
+secrets.json
+
+# TRASH
+TRASH/
+TRASH-FILES.md
+
+# Claude Code
+.claude/
+
+# Compiled binaries
+*.o
+*.a
+*.dylib
+
+# Log files
+*.log
+
+# R artifacts
+.Rhistory
+.RData
+
+# Large CAESAR body model data (exceeds GitHub 100MB limit)
+caesar-norm-wsx/

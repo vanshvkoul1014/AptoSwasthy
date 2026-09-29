@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AptoSwasthy profile + connections API (Cognito-secured)
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 256
+    Runtime: python3.12
+
+Resources:
+
+  # --------------------------------------------------------------------
+  # DynamoDB — one row per Cognito sub
+  # --------------------------------------------------------------------
+  ProfileTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: AptoSwasthyUserProfiles
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userSub
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userSub
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  # --------------------------------------------------------------------
+  # HttpApi secured by a JWT authorizer that validates Cognito tokens.
+  # We accept either access or id tokens — aud/client_id == our client.
+  # --------------------------------------------------------------------
+  ProfileApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: ['*']
+        AllowHeaders: ['authorization','content-type']
+        AllowMethods: ['GET','PUT','OPTIONS']
+      Auth:
+        Authorizers:
+          CognitoAuth:
+            JwtConfiguration:
+              audience:
+                - 69hg6pj3eb7ts829l21ogj7kjd
+              issuer: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_mctlUA1LV
+            IdentitySource: $request.header.Authorization
+        DefaultAuthorizer: CognitoAuth
+
+  # --------------------------------------------------------------------
+  # Lambda — one function, routes on method.
+  # --------------------------------------------------------------------
+  ProfileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: profile/
+      Handler: handler.lambda_handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref ProfileTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProfileTable
+      Events:
+        GetProfile:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ProfileApi
+            Method: GET
+            Path: /profile
+        PutProfile:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ProfileApi
+            Method: PUT
+            Path: /profile
+
+Outputs:
+  ApiUrl:
+    Description: Base URL to paste into AWSConfig.apiBaseURL
+    Value: !Sub "https://${ProfileApi}.execute-api.${AWS::Region}.amazonaws.com"
+  TableName:
+    Value: !Ref ProfileTable
