@@ -4,185 +4,190 @@ AptoSwasthy is an iOS app that acts like a personal health advisor in your pocke
 
 Think of it as your smart health dashboard: connect it to Apple Health, log your meals, import blood test results, and Pearl will make sense of it all for you.
 
+> **Project Note:** AptoSwasthy was co-developed as a collaborative project. This repository contains the application and backend implementation used in my portfolio, including my contributions to the iOS app, health intelligence features, backend integration, and supporting functionality.
+
 ---
 
 ## What the App Does
 
 - **Health Dashboard** — See all your key health stats (heart rate, steps, sleep, blood pressure, weight, and more) in one place
-- **Pearl AI Chat** — Ask Pearl anything about your health and get personalized, data-driven answers
-- **Life Expectancy Estimate** — See a running estimate of your lifespan based on your actual health data, and which habits are helping or hurting it
-- **Disease Risk Assessment** — Get a clear breakdown of your risk for common conditions based on your profile and metrics
-- **Nutrition Logger** — Log meals by searching foods or scanning barcodes; see your nutrition score
-- **Habit Tracker** — Pearl recommends personalized health habits and tracks your progress
-- **3D Body Visualization** — See a visual body model that reflects your height, weight, and body composition
-- **Blood Test Import** — Upload your lab results and Pearl will analyze them for you
-- **Apple Health Sync** — Automatically pulls in data from your iPhone's Health app
+- **Pearl AI Chat** — Ask Pearl questions about your health and get personalized, data-driven answers
+- **Life Expectancy Estimate** — See a running estimate of your lifespan based on your health data, along with factors that may help or hurt it
+- **Disease Risk Assessment** — Get a breakdown of risk factors for common conditions based on your profile and metrics
+- **Nutrition Logger** — Log meals by searching foods or scanning barcodes and view your nutrition score
+- **Habit Tracker** — Receive personalized health-habit recommendations and track progress
+- **3D Body Visualization** — View a body model that reflects your height, weight, and body composition
+- **Blood Test Import** — Upload lab results for structured analysis
+- **Apple Health Sync** — Pull supported health data from Apple Health
+
+---
+
+## Tech Stack
+
+- **iOS:** Swift, SwiftUI, SwiftData
+- **Health Data:** HealthKit
+- **AI:** Apple FoundationModels with typed tools and a fallback Pearl implementation
+- **Authentication:** Amazon Cognito, OAuth
+- **Backend:** AWS API Gateway, Lambda, DynamoDB
+- **Security:** Keychain-backed token storage
+- **Documents:** PDFKit
+- **Visualization:** SceneKit / ModelIO with a CAESAR-derived parametric body model
+- **Infrastructure:** AWS SAM
+- **Project Generation:** XcodeGen
+
+---
+
+## Compatibility
+
+- **Core app:** iOS 18+
+- **Pearl with Apple FoundationModels:** iOS 26+ on supported Apple Intelligence devices
+- **Fallback Pearl implementation:** used when FoundationModels is unavailable
+- **Development environment:** macOS 14 (Sonoma) or newer with Xcode 16+
 
 ---
 
 ## What You'll Need Before Starting
 
-You need a **Mac computer** to build and run this app (iPhones can't build apps by themselves). Here's everything you need:
+You need a **Mac computer** to build and run this app.
 
 | What | Why | Free? |
 |------|-----|-------|
-| A Mac running macOS 14 (Sonoma) or newer | Required to run Xcode | Yes (comes with Mac) |
-| **Xcode 16** or newer | Apple's tool for building iPhone apps | Yes (free from App Store) |
-| An Apple ID | Required to run the app on your phone | Yes |
-| An iPhone running **iOS 18** or newer | To test on a real device (optional — simulator works too) | You likely already have one |
-| **Homebrew** | A package manager for Mac (makes installing tools easy) | Yes |
-| **XcodeGen** | A tool that sets up the Xcode project file | Yes |
-| **CAESAR Body Model Data** | Required for the 3D body visualization feature — see the section below | Free (registration required) |
+| A Mac running macOS 14 (Sonoma) or newer | Required to run Xcode | Yes |
+| **Xcode 16** or newer | Apple's tool for building iOS apps | Yes |
+| An Apple ID | Required to run the app on a physical iPhone | Yes |
+| An iPhone running **iOS 18** or newer | Optional for device testing; the simulator also works | Varies |
+| **Homebrew** | Package manager for developer tools | Yes |
+| **XcodeGen** | Generates the Xcode project from `project.yml` | Yes |
+| **CAESAR Body Model Data** | Only required if rebuilding the 3D model binary | Free registration required |
 
 ---
 
 ## Starting on a New Computer — Quick Start
 
-If you just want the app running on a fresh Mac as fast as possible, do these three things in order:
+### 1. Install Xcode
 
-### 1. Install Xcode from the Mac App Store
+Open the **App Store**, search for **Xcode**, and install it. Open Xcode once after installation so it can finish setup and accept the license agreement.
 
-Open the **App Store**, search for **Xcode**, click **Get** / **Install** (it's ~15 GB — give it time). Once it finishes, open Xcode once so it can accept the license, then close it.
+### 2. Clone the Repository
 
-### 2. Get the code onto the Mac
+Open **Terminal** and run:
 
-Open **Terminal** (press `⌘ + Space`, type "Terminal", hit Enter) and run:
-
-```
+```bash
 cd ~/Desktop
 git clone https://github.com/vanshvkoul1014/AptoSwasthy.git
 cd AptoSwasthy
 ```
 
-> If you don't have `git` yet, macOS will prompt you to install the Xcode Command Line Tools — click **Install** and wait for it to finish, then re-run the `git clone` command.
->
-> If you received the code as a ZIP instead, double-click to extract it, rename the folder to `APP`, and move it to your Desktop. Then `cd ~/Desktop/APP` in Terminal.
+If macOS prompts you to install the Xcode Command Line Tools, complete that installation and rerun the clone command.
 
-### 3. Run the setup script
+If you received the project as a ZIP instead, extract it and keep the folder name as `AptoSwasthy`, then navigate to that folder in Terminal.
 
-From the `APP` folder in Terminal:
+### 3. Run the Setup Script
 
-```
+From the repository root:
+
+```bash
 ./setup.sh
 ```
 
-This one command installs Homebrew (if missing), installs XcodeGen, generates the Xcode project, and opens it in Xcode for you.
+The script:
 
-### 4. Pick your Apple ID and press Play
+- verifies you are on macOS
+- checks for Xcode Command Line Tools
+- installs Homebrew if needed
+- installs dependencies from the `Brewfile`
+- runs XcodeGen
+- opens the generated Xcode project
+
+### 4. Select Your Development Team and Run
 
 When Xcode opens:
 
-1. Click **AptoSwasthy** in the left sidebar (the blue project icon at the top)
-2. Go to the **Signing & Capabilities** tab
-3. Under **Team**, pick your Apple ID from the dropdown (add it via **Xcode → Settings → Accounts** if it isn't listed)
-4. At the top of Xcode, pick an iPhone simulator (e.g. **iPhone 16 Pro**) or your connected iPhone
-5. Press the **Play button** (▶) or `⌘ + R`
+1. Click **AptoSwasthy** in the left sidebar
+2. Open **Signing & Capabilities**
+3. Select your Apple ID under **Team**
+4. Choose an iPhone simulator or connected iPhone
+5. Press **Run** (`⌘ + R`)
 
-That's it — the app will build and launch. First build takes a few minutes; subsequent builds are fast.
-
-> **About the 3D body model:** The app includes a pre-built `body_basis.bin` file, so the 3D body visualization works out of the box. You only need the raw CAESAR files if you want to rebuild that binary — see the [3D Body Model Data](#3d-body-model-data-required) section at the bottom.
+> The core app runs on iOS 18+. The Apple FoundationModels version of Pearl requires iOS 26+ and supported Apple Intelligence hardware.
 
 ---
 
-## Step-by-Step Setup Guide (Manual — if the Quick Start fails)
+## Step-by-Step Setup Guide
 
-Use this if `setup.sh` didn't work for any reason, or if you want to understand exactly what's happening.
+Use this section if the setup script does not work or if you want to configure the project manually.
 
 ### Step 1 — Install Xcode
 
-1. Open the **App Store** on your Mac
-2. Search for **Xcode**
-3. Click **Get** and then **Install** (it's a large download — around 15GB, so give it time)
-4. Once installed, open Xcode once to accept the license agreement, then close it
+Install **Xcode 16 or newer** from the Mac App Store and open it once after installation.
 
 ### Step 2 — Install Homebrew
 
-Homebrew is like an "app store for developer tools." You only need to do this once.
+Run:
 
-1. Open the **Terminal** app on your Mac (search for "Terminal" in Spotlight — press `⌘ + Space` and type "Terminal")
-2. Paste this entire command and press **Enter**:
-
-```
+```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-3. Follow the on-screen prompts (it may ask for your Mac password)
-4. When it finishes, close Terminal and reopen it
+Follow the terminal prompts.
 
 ### Step 3 — Install XcodeGen
 
-XcodeGen is a small tool that generates the Xcode project file from a configuration file. Run this in Terminal:
-
-```
+```bash
 brew install xcodegen
 ```
 
-Wait for it to finish. You'll see a success message when done.
-
 ### Step 4 — Download the App Code
 
-If you received the code as a ZIP file:
-1. Double-click the ZIP to extract it
-2. Move the extracted folder somewhere easy to find (like your Desktop or Documents)
+Clone the repository:
 
-If you're cloning from GitHub:
-```
+```bash
 git clone https://github.com/vanshvkoul1014/AptoSwasthy.git
+```
+
+Then enter the repository:
+
+```bash
+cd AptoSwasthy
 ```
 
 ### Step 5 — Generate the Xcode Project
 
-1. Open **Terminal**
-2. Navigate to the `AptoSwasthy` folder inside the project. For example, if you put the project on your Desktop:
+The XcodeGen configuration is inside the nested iOS project directory:
 
-```
-cd ~/Desktop/APP/AptoSwasthy
-```
-
-3. Run this command:
-
-```
+```bash
+cd AptoSwasthy
 xcodegen generate
 ```
 
-You should see output ending in something like `✓ Generated project at AptoSwasthy.xcodeproj`. This creates the Xcode project file.
+If the repository is located on your Desktop, the full path would be:
 
-### Step 6 — Open the Project in Xcode
-
-Still in Terminal, run:
-
+```bash
+cd ~/Desktop/AptoSwasthy/AptoSwasthy
+xcodegen generate
 ```
+
+You should see output indicating that `AptoSwasthy.xcodeproj` was generated.
+
+### Step 6 — Open the Project
+
+```bash
 open AptoSwasthy.xcodeproj
 ```
 
-Xcode will open. Give it a minute to load and index the project files.
+### Step 7 — Configure Signing
 
-### Step 7 — Set Your Development Team
-
-This tells Xcode which Apple account to use for running the app.
-
-1. In Xcode, click on **AptoSwasthy** in the left sidebar (the blue icon at the very top)
-2. In the main area, click the **Signing & Capabilities** tab
-3. Under **Team**, click the dropdown and select your Apple ID
-   - If you don't see your Apple ID, go to **Xcode → Settings → Accounts** and add it with the `+` button
-
-> **Note:** With a free Apple ID, you can run the app on your own iPhone for up to 7 days before needing to re-install. A paid Apple Developer account ($99/year) removes this limit and lets you distribute the app.
+1. Click **AptoSwasthy** in Xcode's project navigator
+2. Open **Signing & Capabilities**
+3. Select your Apple ID under **Team**
 
 ### Step 8 — Run the App
 
-**On the iOS Simulator (no iPhone needed):**
-1. At the top of Xcode, click the device selector (it shows something like "iPhone 15" or "Any iOS Device")
-2. Choose an iPhone model from the list (e.g., **iPhone 16 Pro**)
-3. Press the **Play button** (▶) or press `⌘ + R`
-4. The simulator will launch and the app will open automatically
+Choose a simulator or connected iPhone and press:
 
-**On your real iPhone:**
-1. Connect your iPhone to your Mac with a cable
-2. Select your iPhone from the device selector at the top of Xcode
-3. On your iPhone, go to **Settings → General → VPN & Device Management** and trust your Apple ID
-4. Press the **Play button** (▶) or press `⌘ + R`
-
-The first build takes a few minutes. Subsequent builds are much faster.
+```text
+⌘ + R
+```
 
 ---
 
@@ -190,72 +195,125 @@ The first build takes a few minutes. Subsequent builds are much faster.
 
 When you first open AptoSwasthy:
 
-1. **Create an account** — Sign up with your email address. You'll receive a verification code.
-2. **Grant permissions** — The app will ask for access to:
-   - **Apple Health** — to read your health data (steps, heart rate, sleep, etc.)
-   - **Camera** — for barcode scanning when logging food
-   - **Face ID** — for secure login (optional)
-   - **Notifications** — for habit reminders (optional)
-3. **Complete onboarding** — Answer questions about your health, lifestyle, and goals. This helps Pearl give you personalized insights.
-4. **Explore!** — Your dashboard will start populating once the app reads your Apple Health data.
+1. **Create an account** and verify your email
+2. **Grant permissions** for supported Apple Health data and optional app features
+3. **Complete onboarding** so Pearl can use your profile when generating insights
+4. **Explore the dashboard**, nutrition logger, habits, risk assessment, body model, and Pearl
 
 ---
 
-## Troubleshooting
+## Pearl
 
-**"No such module" error in Xcode**
-→ Make sure you ran `xcodegen generate` in the `AptoSwasthy` folder before opening Xcode.
+Pearl is AptoSwasthy's health intelligence assistant.
 
-**"Signing certificate" error**
-→ Go to **Signing & Capabilities** in Xcode and make sure your Apple ID is selected under **Team**.
+On supported devices, Pearl uses Apple's **FoundationModels** framework and typed tools so that structured values such as metrics, trends, disease-risk calculations, nutrition data, habits, and life-expectancy factors come from app logic rather than being invented by the language model.
 
-**App crashes immediately on launch**
-→ Make sure your device or simulator is running **iOS 18 or newer**.
+When FoundationModels is unavailable, the app can fall back to its non-FoundationModels Pearl implementation.
 
-**Build fails with "Swift compiler" errors**
-→ Make sure you have **Xcode 16 or newer**. Go to **Xcode → About Xcode** to check your version.
+Key capabilities include:
 
-**"Could not launch app" on real iPhone**
-→ On your iPhone, go to **Settings → General → VPN & Device Management**, find your Apple ID, and tap **Trust**.
-
-**Simulator is very slow**
-→ Try a different simulator, iPhones with "Pro" in the name tend to perform better. Also make sure your Mac has at least 8GB of RAM.
+- current health metric lookup
+- metric trends and history
+- disease-risk assessment
+- life-expectancy factor analysis
+- nutrition summaries
+- habit recommendations
+- blood-test summaries and biomarker trends
+- baseline and period comparisons
+- metric logging through typed tools
 
 ---
 
-## 3D Body Model Data (Required)
+## Health Data and Persistence
 
-The app includes a feature that shows a 3D body model that adapts to your height, weight, and body composition. This model is powered by the **CAESAR anthropometric dataset** — a large scientific dataset of real human body measurements.
+AptoSwasthy integrates with **HealthKit** to read supported health metrics such as:
 
-The pre-processed model file (`body_basis.bin`) is already included in this repo and the app will work out of the box. **You only need to follow the steps below if you ever need to rebuild that file from scratch** (for example, after modifying the Python conversion script).
+- heart rate
+- resting heart rate
+- heart-rate variability
+- steps
+- sleep
+- blood oxygen
+- respiratory rate
+- active energy
+- exercise minutes
+- weight and body composition
+- additional supported metrics
 
-### What are these files?
+Local application data is persisted using **SwiftData**.
 
-The raw data comes from the **HumanShape / CAESAR-norm-WSX** dataset, published by Pishchulin et al. (2015) in the paper *"Building Statistical Shape Spaces for 3D Human Modeling"* from the Max Planck Institute for Informatics. It is licensed for non-commercial use only.
+Authentication tokens are stored using the **iOS Keychain**.
 
-The four raw data files are:
+---
 
-| File | Size | What it contains |
-|------|------|-----------------|
-| `meanShape.mat` | ~1 MB | The average human body mesh (6,449 points) |
-| `evalues.mat` | ~1 MB | How much each body shape component varies |
-| `evectors.mat` | ~610 MB | All the possible body shape variations |
-| `model.dat` | ~1 MB | The mesh triangle structure |
+## AWS Backend
 
-### Where to download them
+The project includes a serverless AWS backend for authenticated profile synchronization.
 
-1. Go to the **Max Planck Institute for Informatics HumanShape project page**:
-   `https://humanshape.mpi-inf.mpg.de`
-2. Register for a free account (required for non-commercial download)
-3. Download the **CAESAR-norm-WSX** dataset package
-4. Extract the ZIP — you'll find the four files listed above inside
+The infrastructure includes:
 
-### Where to put them
+- **Amazon Cognito** for authentication
+- **API Gateway** for HTTP endpoints
+- **AWS Lambda** for backend logic
+- **DynamoDB** for profile persistence
+- **AWS SAM** for infrastructure configuration
 
-Once downloaded, create a folder called `caesar-norm-wsx` in the root of this project and place all four files inside it:
+Backend infrastructure is located in:
 
+```text
+AptoSwasthy/infra/
 ```
-APP/
+
+Deployment-specific configuration is intentionally kept separate from secrets. Do not commit AWS access keys, private keys, `.env` files, or other credentials.
+
+---
+
+## Blood Test Import
+
+AptoSwasthy supports importing blood-test documents with **PDFKit**.
+
+Imported biomarkers can be stored in the app and used by Pearl for:
+
+- latest blood-panel summaries
+- abnormal-value flags
+- biomarker history
+- biomarker trend analysis
+
+---
+
+## 3D Body Model
+
+AptoSwasthy includes a parametric 3D body visualization based on the **CAESAR / HumanShape** anthropometric dataset.
+
+The repository already includes the preprocessed:
+
+```text
+body_basis.bin
+```
+
+so the body model works without downloading the raw CAESAR files.
+
+You only need the original dataset if you want to rebuild the binary.
+
+### Raw Dataset Files
+
+The conversion workflow expects:
+
+| File | Approx. Size | Purpose |
+|------|-------------:|---------|
+| `meanShape.mat` | ~1 MB | Mean human body mesh |
+| `evalues.mat` | ~1 MB | Shape-component variance |
+| `evectors.mat` | ~610 MB | Shape variation vectors |
+| `model.dat` | ~1 MB | Mesh triangle structure |
+
+The raw dataset is not committed to this repository.
+
+### Dataset Location
+
+If rebuilding the model, place the raw files in:
+
+```text
+AptoSwasthy/
 └── caesar-norm-wsx/
     ├── meanShape.mat
     ├── evalues.mat
@@ -263,42 +321,98 @@ APP/
     └── model.dat
 ```
 
-### How to rebuild `body_basis.bin` (optional)
+### Rebuild the Binary
 
-If you need to regenerate the pre-processed binary from the raw files:
+Install the Python dependencies:
 
-1. Make sure Python 3 is installed on your Mac (check by running `python3 --version` in Terminal)
-2. Install the required Python packages:
-   ```
-   pip3 install numpy scipy
-   ```
-3. Run the conversion script from the project root:
-   ```
-   python3 AptoSwasthy/tools/convert_humanshape.py
-   ```
-   This takes a few minutes (the `evectors.mat` file is 610 MB). When done, it overwrites `body_basis.bin` inside the app's Resources folder automatically.
+```bash
+pip3 install numpy scipy
+```
 
-> **Note:** The `caesar-norm-wsx/` folder is excluded from this GitHub repository because the files are too large for GitHub (610 MB). They live on your Mac only.
+From the repository root, run:
+
+```bash
+python3 AptoSwasthy/tools/convert_humanshape.py
+```
+
+The conversion script regenerates the app's `body_basis.bin`.
+
+> The raw `caesar-norm-wsx/` directory is excluded from Git because the dataset is large and distributed separately under its own licensing terms.
 
 ---
 
-## Project Structure (for the curious)
+## Project Structure
 
+```text
+AptoSwasthy/
+├── AptoSwasthy/
+│   ├── Sources/
+│   │   └── AptoSwasthy/
+│   │       ├── AI/
+│   │       ├── App/
+│   │       ├── Authentication/
+│   │       ├── Design/
+│   │       ├── Home/
+│   │       ├── Models/
+│   │       ├── Onboarding/
+│   │       ├── Pearl/
+│   │       ├── Resources/
+│   │       ├── Risks/
+│   │       ├── Services/
+│   │       └── You/
+│   ├── infra/
+│   │   ├── profile/
+│   │   ├── README.md
+│   │   └── template.yaml
+│   ├── tools/
+│   │   └── convert_humanshape.py
+│   ├── project.yml
+│   └── AptoSwasthy.xcodeproj/
+├── Brewfile
+├── setup.sh
+├── appicon.png
+├── .gitignore
+└── README.md
 ```
-APP/
-├── AptoSwasthy/          — The iOS app code
-│   ├── Sources/          — All Swift source code
-│   │   ├── App/          — App entry point and main navigation
-│   │   ├── AI/           — Pearl chat interface
-│   │   ├── Pearl/        — Pearl's health analysis engines
-│   │   ├── Home/         — Dashboard, habits, nutrition logger
-│   │   ├── Risks/        — Disease risk assessment
-│   │   ├── You/          — Profile and 3D body model
-│   │   ├── Authentication/ — Login, sign up, password reset
-│   │   ├── Services/     — Apple Health, data storage, notifications
-│   │   └── Models/       — Data structures (User, Meal, Habit, etc.)
-│   ├── infra/            — Backend server code (AWS Lambda)
-│   └── project.yml       — Xcode project configuration
-├── appicon.png           — App icon reference
-└── README.md             — This file
+
+---
+
+## Troubleshooting
+
+### "No such module" or project-generation issues
+
+Run XcodeGen from:
+
+```bash
+cd AptoSwasthy
+xcodegen generate
 ```
+
+### Signing certificate error
+
+In Xcode, go to **Signing & Capabilities** and select your Apple ID under **Team**.
+
+### App does not run on the selected device
+
+Make sure the device or simulator is running **iOS 18 or newer**.
+
+### FoundationModels version of Pearl is unavailable
+
+Apple FoundationModels requires **iOS 26+** and compatible Apple Intelligence hardware. On unsupported environments, use the app's fallback Pearl implementation.
+
+### Build fails because Xcode is too old
+
+Use **Xcode 16 or newer** for the core project. Newer SDK availability may be required when compiling FoundationModels functionality.
+
+---
+
+## Contributors
+
+- **Vansh Koul**
+- **Rohan Gandotra**
+
+---
+
+## Disclaimer
+
+AptoSwasthy is a software project intended for health-data organization, experimentation, and informational insights. It is not a substitute for professional medical diagnosis or treatment.
