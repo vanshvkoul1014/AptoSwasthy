@@ -11,7 +11,7 @@ enum AWSConfig {
     /// API Gateway base URL for the profile service (output of `sam deploy`
     /// from `infra/`). Leave nil until the stack is deployed - the client
     /// will silently skip cloud sync and keep working purely on-device.
-    static let apiBaseURL: String? = "https://keny0pxtig.execute-api.us-east-1.amazonaws.com"
+    static let apiBaseURL: String? = nil
 
     static var endpoint: URL {
         URL(string: "https://cognito-idp.\(region).amazonaws.com/")!
