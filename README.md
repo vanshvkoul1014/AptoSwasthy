@@ -50,8 +50,8 @@ Open **Terminal** (press `⌘ + Space`, type "Terminal", hit Enter) and run:
 
 ```
 cd ~/Desktop
-git clone https://github.com/rohangandotra18/APP-APTOSWASTHY.git APP
-cd APP
+git clone https://github.com/vanshvkoul1014/AptoSwasthy.git
+cd AptoSwasthy
 ```
 
 > If you don't have `git` yet, macOS will prompt you to install the Xcode Command Line Tools — click **Install** and wait for it to finish, then re-run the `git clone` command.
@@ -127,7 +127,7 @@ If you received the code as a ZIP file:
 
 If you're cloning from GitHub:
 ```
-git clone https://github.com/rohangandotra18/APP-APTOSWASTHY.git
+git clone https://github.com/vanshvkoul1014/AptoSwasthy.git
 ```
 
 ### Step 5 — Generate the Xcode Project
